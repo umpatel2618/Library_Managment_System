@@ -1,0 +1,9 @@
+from django.urls import path 
+from .views import *
+
+app_name='book_managment'
+
+urlpatterns = [
+    path('books',BookListView.as_view(),name='books'),
+    path('book/<int:pk>', BookDetailView.as_view(), name='book-detail'),
+]

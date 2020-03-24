@@ -1,0 +1,31 @@
+{% extends 'accounts/index.html' %}
+{% load static %}
+{% block content%}
+<div style="margin-left: 40%;" class="container" id="form_registration">
+	<table class="table tale-hover" style="width:30%;">
+    <form method="POST" id="registration">
+			{% csrf_token %}
+
+			{% for field in form %}
+				<tr>
+					<td>
+						{{ field.label}}
+					</td>
+					<td>
+						{{ field }}
+					</td>
+					<td>
+						{{ field.errors }}
+					</td>
+				</tr>
+			{% endfor%}
+			<tr><td></td>
+				<td rowspan="3">
+					<button type="submit" id="id_button" class="btn btn-outline-primary p-2 px-4" border="10px">Register</button>
+				</td>
+			</tr>
+
+	</form>
+	</table>
+</div>
+{% endblock content %}

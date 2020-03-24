@@ -20,7 +20,7 @@ class Book(models.Model):
         return self.title
 
     def get_absolute_url(self):
-        return reverse('book-detail',args = [str(self.id)])
+        return reverse('book_managment:book-detail',args = [str(self.id)])
 
 class BookInstance(models.Model):
     id = models.UUIDField(primary_key=True,default=uuid.uuid4,help_text="Unique ID for this perticular book across whole")
@@ -55,6 +55,4 @@ class Author(models.Model):
     
     def __str__(self):
         return f'{self.last_name}, {self.first_name}'
-
-    
-    
+2    
