@@ -1,5 +1,6 @@
 {% extends 'accounts/index.html' %}
 {% load static %}
+
 {% block content %}
     
             
@@ -16,12 +17,15 @@
                                             <img class="rounded-circle mx-auto d-block" src="{% static 'images/icon/avatar-01.jpg' %}" alt="Card image cap">
                                             <h5 class="text-sm-center mt-2 mb-1">{{ request.user.username }}</h5>
                                             <div class="location text-sm-center">
-                                                <i class="fa fa-map-marker"></i> California, United States</div>
+                                                <i class="fa fa-map-marker"></i> California, United States<br>
+                                                <i class="fa fa-envelope"></i> {{ request.user.email }}<br>
+                                                <i class="fa fa-phone"></i> {{ request.user.contact }}<br>
+                                            </div>
                                         </div>
                                         <hr>
                                         <div class="card-text text-sm-center">
                                             <a href="#">
-                                                <i class="fa fa-facebook-square"></i>
+                                                <i class="fa fa-facebook pr-1"></i>
                                             </a>
                                             <a href="#">
                                                 <i class="fa fa-twitter pr-1"></i>

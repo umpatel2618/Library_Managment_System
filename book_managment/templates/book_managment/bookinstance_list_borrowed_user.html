@@ -1,0 +1,37 @@
+{% extends 'accounts/index.html' %}
+
+
+{% block content %}
+    <div style="margin-left: 30%;" class="container">
+        <h1>Borrowed books</h1>
+
+        {% if bookinstance_list %}
+
+            
+            {% if bookinstance_list.count >= 3 %}
+                <h1 class="text-danger">You can Only Issue 3 Book</h1>
+            
+
+        <ul>
+    
+          {% for bookinst in bookinstance_list %} 
+          <li class="{% if bookinst.is_overdue %}text-danger{% else %}text-success{% endif %}">
+            <a href="{% url 'book_managment:book-detail' bookinst.book.pk %}">{{bookinst.book.title}}</a> (Return Date : <b><u>{{ bookinst.due_back }}) 
+            </u></b> 
+
+                {% if bookinst.is_overdue  %}
+                Please Return Book it is overdue
+            {% endif %}
+                       
+          </li>
+          {% endfor %}
+        </ul>
+    
+        {% else %}
+          <p>There are no books borrowed.</p>
+        {% endif %}
+        {% endif %}    
+    </div>
+
+{% endblock content %}
+    

@@ -8,7 +8,7 @@ class User(AbstractUser):
     email   = models.EmailField(unique = True)
 
     def __str__(self):
-        return self.first_name
+        return self.username
 
     
 class Profile(models.Model):

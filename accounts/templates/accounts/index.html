@@ -35,6 +35,8 @@
     <!-- Main CSS-->
     <link href="{% static 'css/theme.css' %}" rel="stylesheet" media="all">
 
+    <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
+
 </head>
 
 <body class="animsition">
@@ -62,7 +64,7 @@
                                 <i class="fas fa-table"></i>Tables</a>
                         </li>
                         <li>
-                            <a href="{% url 'accounts:login' %}>
+                            <a href="{% url 'accounts:login' %}">
                                 <i class="fas fa-sign-in-alt"></i>Login</a>
                         </li>
                         <li>
@@ -76,7 +78,7 @@
                         <li>
                             <a href="#">
 
-                                <i class="fa fa-key"></i>All Authors</a>
+                                <i class="fa fa-user"></i>All Authors</a>
                         </li>
                         <li>
                             <a href="forget-pass.html">
@@ -122,6 +124,10 @@
                         <li>
                             <a href="#">
                                 <i class="fa fa-user"></i>All Authors</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'book_managment:my-borrowed' %}">
+                                <i class="fa fa-book"></i>My Books</a>
                         </li>
                     </ul>
                 </nav>
@@ -357,11 +363,12 @@
     <script src="{% static 'vendor/perfect-scrollbar/perfect-scrollbar.js' %}"></script>
     <script src="{% static 'vendor/chartjs/Chart.bundle.min.js' %}"></script>
     <script src="{% static 'vendor/select2/select2.min.js' %}">
+    
     </script>
 
     <!-- Main JS-->
     <script src="{% static 'js/main.js' %}"></script>
-
+    <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
 </body>
 
 </html>

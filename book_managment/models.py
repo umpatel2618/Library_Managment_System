@@ -1,6 +1,8 @@
 from django.db import models
 from django.urls import reverse
 import uuid
+from accounts.models import User
+from datetime import date
 # Create your models here.
 
 class Genre(models.Model):
@@ -34,6 +36,13 @@ class BookInstance(models.Model):
         ('r', 'Reserved'),
     )
     status = models.CharField(max_length=1,choices=LOAN_STATUS,blank=True,default='m',help_text="Book Availability")
+    borrower = models.ForeignKey(User,on_delete=models.SET_NULL,null=True,blank=True)
+
+    @property
+    def is_overdue(self):
+        if self.due_back and date.today() > self.due_back:
+            return True
+        return False
 
     class Meta:
         ordering = ['due_back']
@@ -55,4 +64,3 @@ class Author(models.Model):
     
     def __str__(self):
         return f'{self.last_name}, {self.first_name}'
-2    
