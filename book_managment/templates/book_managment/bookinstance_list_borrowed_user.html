@@ -2,36 +2,90 @@
 
 
 {% block content %}
-    <div style="margin-left: 30%;" class="container">
-        <h1>Borrowed books</h1>
 
-        {% if bookinstance_list %}
+<div style="margin-left: 20%;" class="container">
+  <div class="section__content section__content--p3">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-lg-10">
+          <div class="table-responsive table--no-card m-b-30">
 
-            
-            {% if bookinstance_list.count >= 3 %}
-                <h1 class="text-danger">You can Only Issue 3 Book</h1>
-            
+            <center>  
+              <h1>Borrowed books</h1>
+            </center>
 
-        <ul>
-    
-          {% for bookinst in bookinstance_list %} 
-          <li class="{% if bookinst.is_overdue %}text-danger{% else %}text-success{% endif %}">
-            <a href="{% url 'book_managment:book-detail' bookinst.book.pk %}">{{bookinst.book.title}}</a> (Return Date : <b><u>{{ bookinst.due_back }}) 
-            </u></b> 
 
-                {% if bookinst.is_overdue  %}
-                Please Return Book it is overdue
-            {% endif %}
-                       
-          </li>
-          {% endfor %}
-        </ul>
-    
-        {% else %}
-          <p>There are no books borrowed.</p>
-        {% endif %}
-        {% endif %}    
+            <table class="table table-borderless table-striped table-earning">
+              <thead>
+                <tr>
+                  <th>SR.NO</th>
+                  <th>Book</th>
+                  <th>Author</th>
+                  <th class="text-right">ISBN</th>
+                  <th class="text-right">IMPRINT</th>
+                  <th class="text-right">Due Date</th>
+                  <th class="text-right">Status</th>
+                  <th class="text-right">Return</th>
+                </tr>
+              </thead>
+              {% if bookinstance_list %}
+                {% if bookinstance_list.count >= 3 %}
+                <center>
+                  <h1 class="text-danger">You can Only Issue 3 Book</h1>
+                </center>
+                {% endif %}
+              {% for bookinst in bookinstance_list %}
+              <tbody>
+                <tr>
+                  <td>{{forloop.counter}}</td>
+                  <td class="text-primary"><a
+                      href="{% url 'book_managment:book-detail' bookinst.book.pk %}">{{bookinst.book.title}}</a></td>
+                  <td>{{bookinst.book.author}}</td>
+                  <td class="text-right">{{bookinst.book.isbn}}</td>
+                  <td class="text-right">{{bookinst.imprint}}</td>
+                  <td class="text-right text-danger">{{ bookinst.due_back }}</td>
+                  <td class="text-right text-danger">On Loan</script></td>
+                  <td><a class="btn btn-outline-danger issue" type="button" id="id_{{ bookinst.id }}">Return</a></td>
+                </tr>
+
+
+
+                {% endfor %}
+                {% else %}
+                <p>There are no books borrowed.</p>
+                {% endif %}
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
+</div>
+
+
+
+<script>
+  $('.issue').click(function(){
+    alert("hello")
+    let result = confirm('Are you want to return This book?')
+    if (result) {
+      id = this.id.split('_').pop()
+      $.ajax({
+        url: "{% url 'book_managment:return' %}",
+        dataType: "json",
+        data: { 'id': id },
+        success: function (data) {
+          if (data.success == true) {
+            alert(data.msg)
+          }
+          else {
+            alert(data.success)
+          }
+        },
+      });
+    } else {
+
+    }
+  });
+</script>
 
 {% endblock content %}
-    

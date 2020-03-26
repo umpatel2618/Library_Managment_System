@@ -25,8 +25,13 @@
       {% endif %}
       <p><strong>Imprint:</strong> {{ copy.imprint }}</p>
       <p class="text-muted"><strong>Id:</strong> {{ copy.id }}</p>
+      
+      {% if user.is_authenticated %}
       <button class="btn btn-primary issue" type="button" id="id_{{ copy.id }}">Borrow</button>
-{% endfor %}
+      {% else %}
+      <a  class="btn btn-primary" href="{% url 'accounts:login'%}">Borrow</a>
+      {% endif %}
+      {% endfor %}
 
 </div>
 </div>
