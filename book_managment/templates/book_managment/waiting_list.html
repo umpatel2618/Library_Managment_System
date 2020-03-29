@@ -1,0 +1,54 @@
+{% extends 'accounts/index.html' %}
+
+{% block content %}
+
+
+<div style="margin-left: 20%;" class="container">
+    <div class="section__content section__content--p3">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-lg-10">
+            <div class="table-responsive table--no-card m-b-30">
+  
+              <center>  
+                <h1>Waiting list of books</h1>
+              </center>
+  
+  
+              <table class="table table-borderless table-striped table-earning">
+                <thead>
+                  <tr>
+                    <th>SR.NO</th>
+                    <th>Book</th>
+                    <th>User</th> 
+                    <th>Request Time</th>
+                  </tr>
+                </thead>
+                {% if object_list %}
+                  
+                {% for bookinst in object_list %}
+                <tbody>
+                  <tr>
+                    <td>{{forloop.counter}}</td>
+                    <td class="text-primary"><a
+                        href="#">{{bookinst.waiting}}</a></td>
+                    <td>{{bookinst.user}}</td>
+                    <td>{{bookinst.request_time}}</td>
+                    
+                  </tr>
+  
+  
+  
+                  {% endfor %}
+                  {% else %}
+                  <p>There Records in waiting list</p>
+                  {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+
+{% endblock content %}

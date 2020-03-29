@@ -9,4 +9,5 @@ urlpatterns = [
     path('mybooks/',LoanedBooksByUserListView.as_view(),name='my-borrowed'),
     path('borrow/',BorrowBook.as_view(),name='borrow'),
     path('return/',ReturnBook.as_view(),name='return'),
+    path('waitinglist',Waitinglist.as_view(),name='waiting_list'),
 ]

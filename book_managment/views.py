@@ -8,6 +8,8 @@ import datetime
 from django.contrib.auth.decorators import login_required
 from Library_Managment_System.settings import EMAIL_HOST_USER
 from django.core.mail import send_mail
+from django.utils import timezone
+from django.db.models import Q,Count
 # Create your views here.
 
 class BookListView(generic.ListView):
@@ -33,54 +35,85 @@ class BorrowBook(View):
         print(id)
         if id:
             book = get_object_or_404(BookInstance,id=id)
-            a = BookInstance.objects.filter(borrower=request.user).count()
-            print(a,book)
-            if a >= 3:
+            total_books = BookInstance.objects.filter(borrower=request.user).count()
+            print(total_books,book)
+            if total_books >= 3: 
                 return  JsonResponse(status=203,data={'success':True,'msg':"You can not Borrow more than 3 book please return a book"})
-            elif book.status == 'o':
-                return  JsonResponse(status=203,data={'success':True,'msg':"This Book Is Already On Loan, wait untill its become available"})
+            else:    
                 if book:
-                    book.borrower = request.user
-                    book.due_back = date.today()
-                    book.due_back = book.due_back + datetime.timedelta(days=7*2)
-                    book.status = 'o'
-                    
-                    recepient= request.user.email
-                    subject = "Book Issued"
-                    Message = """-----------Welcome To Library Managment System-----------\n
-                                 You Are succesfully Issue Book\n
-                                 Book Name:"""+ book.book + """\n
-                                 Book Author:"""+ book.author +"""\n
-                                 Book ISBN Number:"""+ book.isbn +"""\n
-                                 Book Imprint:"""+ book.imprint +"""\n
-                                 Book Return Date:"""+ book.due_back +"""\n
-                                 Thank You..
-                                """
-                    send_mail(subject,Message,EMAIL_HOST_USER,[recepient],fail_silently=False)
-                    book.save()
-                    return JsonResponse(status=200,data={'success':True,'msg':"This Book issue by You"})
-                else:
-                    return JsonResponse(status=203,data={'success':"This Book are not avaliable"})
+                    if book.status == 'o': #if book is already borrowed.
+                        if Waiting.objects.filter(book=book).exists():
+                            if Waiting.objects.filter(~Q(user=request.user)).exists():
+                                wait = Waiting.objects.get(book=book)
+                                wait.user.add(request.user,through_defaults={'request_time':timezone.now()})
+                            else:
+                                return JsonResponse(status=203,data={'success':"You are already in waiting list..!"})
+                        else:
+                            wait = Waiting.objects.create(book=book)
+                            wait.user.add(request.user,through_defaults={'request_time':timezone.now()})
+                        return JsonResponse(status=203,data={'success':"This Book Not Available Yet,So You are add in Waiting List For This book..!"})
+                    else: #Issue a New Book
+                        book.borrower = request.user
+                        book.due_back = date.today()
+                        book.due_back = book.due_back + datetime.timedelta(days=7*2)
+                        book.status = 'o'
+                        book.save()
+                        recepient= request.user.email
+                        subject = "Book Issued"
+                        Message = """              -----------Welcome To Library Managment System-----------\n
+                                    You Are succesfully Issue Book\n
+                                    Book Name:"""+ book.book.title + """\n
+                                    Book Author:"""+ book.book.author.first_name + "" + book.book.author.last_name+"""\n
+                                    Book ISBN Number:"""+ book.book.isbn +"""\n
+                                    Book Imprint:"""+ book.imprint +"""\n
+                                    Book Return Date:"""+ str(book.due_back) +"""\n
+                                    Thank You..
+                                    """
+                        print(subject,Message,recepient)
+                        send_mail(subject,Message,EMAIL_HOST_USER,[recepient],fail_silently=False)
+                        return JsonResponse(status=200,data={'success':True,'msg':"This Book issue by You"})
         else:
             return JsonResponse(status=203,data={'fail':False})
-
-        
-        
 
 class ReturnBook(View):
     def get(self,request,*args, **kwargs):
         id = request.GET.get('id',None)
         print(id)
         if id:
-            book = get_object_or_404(BookInstance,id=id)
+            book = get_object_or_404(BookInstance,id=id).book
+            print(book)
             if book:
-                book.borrower = None
-                book.due_back = None
-                book.status = 'a'
+                result = BookInstance.objects.filter(id=id).update(status='a',borrower=None,due_back=None)
+                print(result,"book Become available")
+                if Waiting.objects.all().count() > 0: #Assign Book to first user from waiting table
+                    print("........................if")
+                    user = WaitingTime.objects.filter().first().user
+                    Waiting.objects.filter(user=user).delete()
+                    print("remove user",user)
+                    BookInstance.objects.filter(id=id).update(book=book,due_back= date.today() + datetime.timedelta(days=7*2),status='o',borrower=user)
+                    recepient = user.email
+                    subject = "Your Requested Book is Issued Now"
+                    Message = """              -----------Welcome To Library Managment System-----------\n
+                                    The Book That You Have requested for is now succesfully Isuued..\n
+                                    Plaese check more details on website.\n
+                                    Thank You..
+                                    """
+                    print(subject,Message,recepient)
+                    send_mail(subject,Message,EMAIL_HOST_USER,[recepient],fail_silently=False)
+                    print("...assign to first user")
+                print("return book")
                 book.save()
                 return JsonResponse(status=200,data={'success':True,'msg':"This Book is Returned by You"})
-                return redirect('book_managment:mybooks')
             else:
                 return JsonResponse(status=203,data={'success':"This Book is not Returned By You"})
         else:
             return JsonResponse(status=203,data={'fail':False})
+
+class Waitinglist(View):
+    def post(self,request):
+        book_id = request.POST['book']
+        print(book_id)  
+    def get(self,request):
+        object_list = WaitingTime.objects.all()
+        return render(request,'book_managment/waiting_list.html',{'object_list':object_list})
+    
