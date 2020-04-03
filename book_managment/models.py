@@ -3,6 +3,7 @@ from django.urls import reverse
 import uuid  # Required for unique book instances
 from accounts.models import User
 from datetime import date
+from django.utils import timezone
 # Create your models here.
 
 
@@ -48,9 +49,7 @@ class BookInstance(models.Model):
     )
     status = models.CharField(max_length=1, choices=LOAN_STATUS,
                               blank=True, default='m', help_text="Book Availability")
-    borrower = models.ForeignKey(
-        User, on_delete=models.SET_NULL, null=True, blank=True)
-
+    
     @property
     def is_overdue(self):
         if self.due_back and date.today() > self.due_back:
@@ -61,8 +60,11 @@ class BookInstance(models.Model):
         ordering = ['due_back']
 
     def __str__(self):
-        return f'{self.id} ({self.book.title})'
+        return f'{self.id} ({self.book.title}) ({self.status})'
 
+    def get_absolute_url(self):
+        """Returns the url to access a particular author instance."""
+        return reverse('book_managment:bookinstance-update', args=[str(self.id)])
 
 class Author(models.Model):
     first_name = models.CharField(max_length=50)
@@ -75,7 +77,7 @@ class Author(models.Model):
 
     def get_absolute_url(self):
         """Returns the url to access a particular author instance."""
-        return reverse('author-detail', args=[str(self.id)])
+        return reverse('book_managment:author-detail', args=[str(self.id)])
 
     def __str__(self):
         return f'{self.last_name}, {self.first_name}'
@@ -96,3 +98,13 @@ class WaitingTime(models.Model):
 
     def __str__(self):
         return str(self.request_time)
+
+class Transaction(models.Model):
+    bookinstance = models.ForeignKey(BookInstance,on_delete=models.CASCADE)
+    borrower = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    requested_date = models.DateTimeField(default=timezone.now)
+    issue_date = models.DateTimeField(null=True,blank=True)
+    return_date = models.DateTimeField(null=True,blank=True)
+
+    def __str__(self):
+        return f'({self.bookinstance.book.title}) ({self.bookinstance.imprint}) ({self.borrower})'

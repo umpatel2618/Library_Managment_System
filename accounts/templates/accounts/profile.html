@@ -14,28 +14,17 @@
                                     </div>
                                     <div class="card-body">
                                         <div class="mx-auto d-block">
-                                            <img class="rounded-circle mx-auto d-block" src="{% static 'images/icon/avatar-01.jpg' %}" alt="Card image cap">
+                                            <img style="width: 100px;" class="rounded-circle mx-auto d-block" src="{{ request.user.image.url }}" alt="Card image cap">
                                             <h5 class="text-sm-center mt-2 mb-1">{{ request.user.username }}</h5>
                                             <div class="location text-sm-center">
-                                                <i class="fa fa-map-marker"></i> California, United States<br>
+                                                <i class="fa fa-map-marker"></i> {{ request.user.city }}<br>
                                                 <i class="fa fa-envelope"></i> {{ request.user.email }}<br>
                                                 <i class="fa fa-phone"></i> {{ request.user.contact }}<br>
                                             </div>
                                         </div>
                                         <hr>
                                         <div class="card-text text-sm-center">
-                                            <a href="#">
-                                                <i class="fa fa-facebook pr-1"></i>
-                                            </a>
-                                            <a href="#">
-                                                <i class="fa fa-twitter pr-1"></i>
-                                            </a>
-                                            <a href="#">
-                                                <i class="fa fa-linkedin pr-1"></i>
-                                            </a>
-                                            <a href="#">
-                                                <i class="fa fa-pinterest pr-1"></i>
-                                            </a>
+                                            <a class="btn btn-primary" href="{% url 'accounts:profile_update' pk=request.user.pk %}">Update Profile</a>
                                         </div>
                                     </div>
                                 </div>

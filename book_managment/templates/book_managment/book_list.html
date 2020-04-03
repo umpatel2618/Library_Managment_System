@@ -1,18 +1,121 @@
 {% extends 'accounts/index.html' %}
 {% block content %}
-<div style="margin-left: 40%;" class="container">
-<h1>Book List</h1>
-{% if my_book_list %}
-<ul>
-  {% for book in my_book_list %}
-    <li>
-      <a href="{{ book.get_absolute_url }}">{{ book.title }}</a> ({{book.author}})
-    </li>
-  {% endfor %}
-</ul>
-{% else %}
-  <p>There are no books in the library.</p>
-{% endif %} 
+
+<div style="margin-left: 20%;" class="container">
+  <div class="section__content section__content--p3">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-lg-10">
+          <div class="table-responsive table--no-card m-b-30">
+
+            <center>  
+              <h1>Book List</h1>
+            </center>
+            <br><br>
+            
+            <table class="table table-borderless table-striped table-earning">
+              <thead>
+                <tr>
+                  <th>SR.NO</th>
+                  <th>Name</th>
+                  <th>Author Name</th>
+                  <th>Category</th> 
+                  <th>Isbn</th>
+                  {% if user.is_staff %}
+                  <th>Update</th>
+                  <th>Delete</th>
+                  {% endif %}
+                </tr>
+              </thead>
+              {% if searchresult%}
+              {% for book in searchresult %}
+              <tbody>
+                <tr>
+                  <td>{{forloop.counter}}</td>
+                  <td class="text text-primary"><b><a href="{{ book.get_absolute_url }}">{{ book.title }}</a></b></td>
+                  <td><b>{{book.author.first_name}}&nbsp;{{book.author.last_name}}</b></td>
+                  <td>{{book.genre.all|join:", "}}</td>
+                  <td>{{book.isbn}}</td>
+                  {% if user.is_staff %}
+                  <td>
+                    <a class="badge badge-success p-2" href="{% url 'book_managment:book_update' pk=book.pk %}"><i class="fa fa-cog fa-lg"></i></a>
+                  </td>
+                  <td>
+                    <a class="badge badge-danger delete p-2" href="{% url 'book_managment:deleterequest' id=book.id %}"><i class="fas fa-trash fa-lg"></i></a>
+                  </td>
+                  {% endif %}
+                </tr>
+                {% endfor %}
+                {% elif my_book_list %}
+
+              {% for book in my_book_list %}
+              <tbody>
+                <tr>
+                  <td>{{forloop.counter}}</td>
+                  <td class="text text-primary"><b><a href="{{ book.get_absolute_url }}">{{ book.title }}</a></b></td>
+                  <td><b>{{book.author.first_name}}&nbsp;{{book.author.last_name}}</b></td>
+                  <td>{{book.genre.all|join:", "}}</td>
+                  <td>{{book.isbn}}</td>
+                  {% if user.is_staff %}
+                  <td>
+                    <a class="badge badge-success p-2" href="{% url 'book_managment:book_update' pk=book.pk %}"><i class="fa fa-cog fa-lg"></i></a>
+                  </td>
+                  <td>
+                    <a class="badge badge-danger delete p-2" href="{% url 'book_managment:deleterequest' id=book.id %}"><i class="fas fa-trash fa-lg"></i></a>
+                  </td>
+                  {% endif %}
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+
+                {% else %}
+                 <br><br> 
+                <div class="alert alert-info" role="alert">
+                  <center><h3>There are no books.</h3></center>
+                </div>
+                {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  $('.delete').click(function (event) {
+    let result = confirm('Are you sure,You want to Delete This Record')
+    if (!result) {
+        event.preventDefault();
+    }
+});
+
+</script>
+
+
+<div class="container">
+{% if is_paginated %}
+
+      {% if page_obj.has_previous %}
+        <a class="btn btn-outline-info mb-4" href="?page=1">First</a>
+        <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+      {% endif %}
+
+      {% for num in page_obj.paginator.page_range %}
+        {% if page_obj.number == num %}
+          <a class="btn btn-info mb-4" href="?page={{ num }}">{{ num }}</a>
+        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+          <a class="btn btn-outline-info mb-4" href="?page={{ num }}">{{ num }}</a>
+        {% endif %}
+      {% endfor %}
+
+      {% if page_obj.has_next %}
+        <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.next_page_number }}">Next</a>
+        <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+      {% endif %}
+
+    {% endif %}
+  
+  </div>
 </div>      
 {% endblock content %}
     

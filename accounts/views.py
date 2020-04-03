@@ -2,10 +2,11 @@ from django.shortcuts import render,redirect
 from book_managment.models import *
 from .forms import *
 from django.contrib import messages
-from django.urls import reverse
+from django.urls import reverse,reverse_lazy
 from django.contrib.auth import authenticate, login, logout
-from django.views.generic import DetailView, ListView
+from django.views.generic import DetailView, ListView,UpdateView
 from django.views.generic import View
+from django.http import JsonResponse
 # Create your views here.
 
 def home(request):
@@ -26,6 +27,12 @@ def home(request):
 
 def profile(request):
     return render(request,'accounts/profile.html')
+
+class ProfileUpdateView(UpdateView):
+    model = User
+    form_class = ProfileUpdateForm
+    template_name = 'accounts/profile_update.html'
+    success_url = reverse_lazy('accounts:profile') 
 
 class LogoutView(View):
     def get(self, request):
@@ -73,3 +80,10 @@ class LoginView(View):
             form1 = LoginForm()
             return render(request, 'accounts/login.html', {'form': form1})
 
+def Validate_Username(request):
+    username = request.GET.get('username',None)
+    data = {
+        'is_taken':User.objects.filter(username__iexact=username).exists()
+    }
+    return JsonResponse(data)
+    

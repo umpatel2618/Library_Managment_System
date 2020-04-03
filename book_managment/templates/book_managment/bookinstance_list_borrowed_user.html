@@ -14,45 +14,63 @@
               <h1>Borrowed books</h1>
             </center>
 
-
+            {% if transaction_list %} 
             <table class="table table-borderless table-striped table-earning">
               <thead>
                 <tr>
                   <th>SR.NO</th>
                   <th>Book</th>
                   <th>Author</th>
-                  <th class="text-right">ISBN</th>
-                  <th class="text-right">IMPRINT</th>
-                  <th class="text-right">Due Date</th>
-                  <th class="text-right">Status</th>
-                  <th class="text-right">Return</th>
+                  <th class="">ISBN</th>
+                  <th class="">IMPRINT</th>
+                  <th class="">Due Date</th>
+                  <th class="">Issue Date</th>
+                  <th class="">Return Date</th>
+                  <th class="">Status</th>
+                  <th class="">Delete</th>
+                  
                 </tr>
               </thead>
-              {% if bookinstance_list %}
-                {% if bookinstance_list.count >= 3 %}
-                <center>
-                  <h1 class="text-danger">You can Only Issue 3 Book</h1>
-                </center>
-                {% endif %}
-              {% for bookinst in bookinstance_list %}
+              
+                              {% for bookinst in transaction_list %}
               <tbody>
                 <tr>
                   <td>{{forloop.counter}}</td>
-                  <td class="text-primary"><a
-                      href="{% url 'book_managment:book-detail' bookinst.book.pk %}">{{bookinst.book.title}}</a></td>
-                  <td>{{bookinst.book.author}}</td>
-                  <td class="text-right">{{bookinst.book.isbn}}</td>
-                  <td class="text-right">{{bookinst.imprint}}</td>
-                  <td class="text-right text-danger">{{ bookinst.due_back }}</td>
-                  <td class="text-right text-danger">On Loan</script></td>
-                  <td><a class="btn btn-outline-danger issue" type="button" id="id_{{ bookinst.id }}">Return</a></td>
-                </tr>
-
-
-
-                {% endfor %}
+                  <td class="text-primary"><b><a
+                      href="{% url 'book_managment:book-detail' bookinst.bookinstance.book.pk %}">{{bookinst.bookinstance.book.title}}</a></b></td>
+                  <td>{{bookinst.bookinstance.book.author}}</td>
+                  <td class="text-right">{{bookinst.bookinstance.book.isbn}}</td>
+                  <td class="text-right"><b>{{bookinst.bookinstance.imprint}}</b></td>
+                  <td class="text-right text-danger"><b>{{ bookinst.bookinstance.due_back }}<br>{% if bookinst.bookinstance.is_overdue %} Book Is Overdue please return as soon as possible.{% endif %}</b></td>
+                  <td class="text-right text-success"><b>{{ bookinst.issue_date }}</b></td>
+                  <td class="text-right text-primary"><b>{{ bookinst.return_date }}</b></td>
+                  
+                  <td> 
+                  {% if bookinst.bookinstance.status == 'o' %}
+                  <span class="badge badge-danger">Issued</span>
+                  {% elif bookinst.bookinstance.status == 'r'%}
+                  <span class="badge badge-info">Pending</span>
+                  {% elif bookinst.bookinstance.status == 'a'%}
+                  <span class="badge badge-success">Returned</span>
+                  {% endif %}</td>
+                  {% if bookinst.bookinstance.status == 'r' %}
+                  <td>
+                    <a class="badge badge-danger delete" href="{% url 'book_managment:deleterequest' id=bookinst.bookinstance.id %}""><i class="fas fa-trash"></i></a>
+                </td>
                 {% else %}
-                <p>There are no books borrowed.</p>
+                <td>
+                {% endif %}
+                </tr>
+                {% endfor %}
+                </tbody>
+                </table>
+                
+                {% else %}
+                <br><br>
+                <div class="alert alert-info" role="alert">
+                  <center><h3>There are no books borrowed.</h3></center>
+                </div>
+                
                 {% endif %}
           </div>
         </div>
@@ -61,31 +79,15 @@
   </div>
 </div>
 
-
-
 <script>
-  $('.issue').click(function(){
-    alert("hello")
-    let result = confirm('Are you want to return This book?')
-    if (result) {
-      id = this.id.split('_').pop()
-      $.ajax({
-        url: "{% url 'book_managment:return' %}",
-        dataType: "json",
-        data: { 'id': id },
-        success: function (data) {
-          if (data.success == true) {
-            alert(data.msg)
-          }
-          else {
-            alert(data.success)
-          }
-        },
-      });
-    } else {
-
+  $('.delete').click(function (event) {
+    let result = confirm('Are you sure,You want to Delete This Record')
+    if (!result) {
+        event.preventDefault();
     }
-  });
+});
+
 </script>
+
 
 {% endblock content %}

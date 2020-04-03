@@ -1,0 +1,76 @@
+{% extends 'accounts/index.html' %}
+{% block content %}
+<div style="margin-left: 20%;" class="container">
+  <div class="section__content section__content--p3">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-lg-10">
+          <div class="table-responsive table--no-card m-b-30">
+
+            <center>  
+              <h1>Author List</h1>
+            </center>
+            <br><br>
+            {% if my_book_list %}
+               
+            <table class="table table-borderless table-striped table-earning">
+              <thead>
+                <tr>
+                  <th>SR.NO</th>
+                  <th>First Name</th>
+                  <th>Last Name</th>
+                  <th>Date Of Biirth</th> 
+                  <th>Date Of Death</th>
+                  {% if user.is_staff %}
+                  <th>Update</th>
+                  <th>Delete</th> 
+                  {% endif %}
+                </tr>
+              </thead>
+              {% for author in my_book_list %}
+              <tbody>
+                <tr>
+                  <td>{{forloop.counter}}</td>
+                  <td><b>{{author.first_name}}</b></td>
+                  <td><b>{{author.last_name}}</b></td>
+                  <td>{{author.date_of_birth}}</td>
+                  <td>{{author.date_of_death}}</td>
+                  {% if user.is_staff %}
+                  <td>
+                    <a class="badge badge-success p-2" href="{% url 'book_managment:author_update' pk=author.pk %}"><i class="fa fa-cog fa-lg"></i></a>
+                  </td>
+                  <td>
+                    <a class="badge badge-danger delete p-2" href="{% url 'book_managment:deleterequest' id=author.id %}"><i class="fas fa-trash fa-lg"></i></a>
+                  </td>
+                  
+                  {% endif %}
+                </tr>
+                  {% endfor %}
+                
+              </tbody>
+            </table>
+
+                {% else %}
+                 <br><br> 
+                <div class="alert alert-info" role="alert">
+                  <center><h3>There are no waiting list for this book.</h3></center>
+                </div>
+                {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  $('.delete').click(function (event) {
+    let result = confirm('Are you sure,You want to Delete This Record')
+    if (!result) {
+        event.preventDefault();
+    }
+});
+
+</script>
+
+{% endblock content %}
+    

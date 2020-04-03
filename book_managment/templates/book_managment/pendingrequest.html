@@ -1,0 +1,105 @@
+{% extends 'accounts/index.html' %}
+
+{% block content %}
+<div style="margin-left: 20%;" class="container">
+    <div class="section__content section__content--p3">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-lg-10">
+            <div class="table-responsive table--no-card m-b-30">
+  
+    <center>
+        {% if object_list %}
+        <hr>
+        <div>
+            <strong>            
+                    <h3>Requested Books</h3>
+            </strong>
+        </div>
+        <hr>
+        <table class="table table-borderless table-striped table-earning">
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Request By</th>
+                    <th>Contact</th>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>ImPrint</th>
+                    <th>Request Date</th>
+                    <th>Issue Date</th>
+                    <th>Return Date</th>
+                    <th>Current Status</th>
+                    <th>Change Status</th>
+                    <th>Delete Request</th>
+                </tr>
+            </thead>
+
+            <body>
+                {% for i in object_list %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td><b>{{ i.borrower }}</b></td>
+                    <td>{{ i.borrower.contact }}</td>
+                    <td><b>{{ i.bookinstance.book.title }}</b></td>
+                    <td>{{ i.bookinstance.book.author.first_name }}</td>
+                    <td><b>{{ i.bookinstance.imprint }}</b></td>
+                    <td><b>{{ i.requested_date }}</b></td>
+                    <td class="text text-success" id="issue_date{{ i.id }}"><b>{% if i.issue_date %}{{ i.issue_date }} {% else %} -- {% endif %}</b></td>
+                    <td class="text text-danger" id="return_date{{ i.id }}"><b>{% if i.return_date %}{{ i.return_date }} {% else %} -- {% endif %}</b></td>
+                    <td id="cureentstatus{{ i.id }}">
+                        {% if i.bookinstance.status == 'r' %}
+                            <span class="badge badge-info">Pending</span>
+                        {% elif i.bookinstance.status == 'o' %}
+                            <span class="badge badge-danger">Not Return Yet</span>
+                        {% else %}
+                            <span class="badge badge-success">Return</span> 
+                        {% endif %}</td>
+                    <td> 
+                        {% if i.bookinstance.status == 'r' %}
+                            <a class="badge badge-success accept sm" href="{% url 'book_managment:acceptrequest' id=i.bookinstance.id %}">Issue <i class="fas fa-check fa-1x"></i></a>
+                            </td>
+                            <td>
+                                <a class="badge badge-danger delete" href="{% url 'book_managment:deleterequest' id=i.bookinstance.id %}"><i class="fas fa-trash"></i></a>
+                            </td>
+                        {% elif i.bookinstance.status == 'o' %}
+                                <a class="badge badge-info return sm" href="{% url 'book_managment:returnrequest' id=i.bookinstance.id %}">Return <i class="fas fa-check fa-1x"></i></a>
+                            </td>
+                        {% endif %}
+                    <td></td>
+                </tr>
+                {% endfor %}
+
+                <script>
+                    $('.accept').click(function (event) {
+                        let result = confirm('Are you sure,issue This Book to this student')
+                        if (!result) {
+                            event.preventDefault();
+                        }
+                    });
+
+                    $('.return').click(function (event) {
+                        let result = confirm('Are you sure This Book Return By Student')
+                        if (!result) {
+                            event.preventDefault();
+                        }
+                    });
+                    
+                    $('.delete').click(function (event) {
+                        let result = confirm('Are you sure,You want to Delete This Record')
+                        if (!result) {
+                            event.preventDefault();
+                        }
+                    });
+                </script>
+            </body>
+        </table>
+        {% else %}
+        <div class="alert alert-dark" role="alert">
+            <h1>There are no pending request.</h1>
+          </div>
+        
+    </center>
+{% endif %}
+{% endblock content %}
+    

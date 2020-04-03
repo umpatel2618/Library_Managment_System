@@ -337,8 +337,8 @@ section {
 }
 
 .login-wrap {
-    max-width: 540px;
-    padding-top: 8vh;
+    max-width: 700px;
+    padding-top: 8vh;   
     margin: 0 auto;
 }
 
@@ -386,7 +386,7 @@ section {
 
 .login-content {
     background: #fff;
-    padding: 30px 30px 20px;
+    padding: 40px 40px 30px;
     -webkit-border-radius: 2px;
     -moz-border-radius: 2px;
     border-radius: 2px;

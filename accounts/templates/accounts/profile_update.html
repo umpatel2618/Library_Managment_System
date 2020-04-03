@@ -1,0 +1,57 @@
+{% extends 'accounts/index.html' %}
+
+{% block content %}
+
+
+<div style="margin-left: 30%;margin-top: -5%;" class="animsition">
+    <div class="page-wrapper">
+        <div class="page-content--bge5">
+            <div class="container">
+                <div class="login-wrap">
+                    <div class="login-content">
+                        <div class="login-logo">
+                            <h1>Update profile</h1>
+                        </div>
+                        <div class="login-form">
+
+
+
+
+                            {% if messages %}
+                            <ul class="messages">
+                                {% for message in messages %}
+                                <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>
+                                    {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}Important: {% endif %}
+                                    {{ message }}
+                                </li>
+                                {% endfor %}
+                            </ul>
+                            {% endif %}
+                            <form method="POST">
+
+                                {% csrf_token %}
+
+                                {% for field in form %}
+
+
+                                <div class="form-group">
+                                    <label>{{ field.label}}</label>
+                                    {{ field }}
+
+                                </div>
+                                {% endfor %}
+                                    
+                                <button class="au-btn au-btn--block au-btn--green m-b-20" type="submit">Update</button>
+                                
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

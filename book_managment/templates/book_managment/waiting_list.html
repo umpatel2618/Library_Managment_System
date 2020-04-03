@@ -14,34 +14,50 @@
                 <h1>Waiting list of books</h1>
               </center>
   
-  
+              {% if object_list %}
+                 
               <table class="table table-borderless table-striped table-earning">
                 <thead>
                   <tr>
                     <th>SR.NO</th>
                     <th>Book</th>
+                    <th>ImPrint</th>
                     <th>User</th> 
                     <th>Request Time</th>
+                    {% if not user.is_authenticated %}
+                    {% else %}
+                    <th>Delete Request</th>
+                    {% endif %}
                   </tr>
                 </thead>
-                {% if object_list %}
-                  
+                 
                 {% for bookinst in object_list %}
                 <tbody>
                   <tr>
                     <td>{{forloop.counter}}</td>
                     <td class="text-primary"><a
                         href="#">{{bookinst.waiting}}</a></td>
+                    <td><b>{{bookinst.waiting.book.imprint}}</b></td>
                     <td>{{bookinst.user}}</td>
                     <td>{{bookinst.request_time}}</td>
-                    
+                    {% if bookinst.user == request.user or user.is_staff %}
+                    <td class="">
+                      <a class="badge badge-danger delete" href="{% url 'book_managment:deleterequest' id=bookinst.waiting.book.id %}"><i class="fas fa-trash"></i></a>
+                    </td>
+                    {% elif not user.is_authenticated %}
+                    {% else %}
+                    <td></td>
+                    {% endif %}
                   </tr>
-  
-  
-  
-                  {% endfor %}
+              {% endfor %}
+              </tbody>
+              </table>
+
                   {% else %}
-                  <p>There Records in waiting list</p>
+                   <br><br> 
+                  <div class="alert alert-info" role="alert">
+                    <center><h3>There are no waiting list for this book.</h3></center>
+                  </div>
                   {% endif %}
             </div>
           </div>
@@ -49,6 +65,14 @@
       </div>
     </div>
   </div>
-  
+  <script>
+    $('.delete').click(function (event) {
+      let result = confirm('Are you sure,You want to Delete This Record')
+      if (!result) {
+          event.preventDefault();
+      }
+  });
+
+  </script>
 
 {% endblock content %}
